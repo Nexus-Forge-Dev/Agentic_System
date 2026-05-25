@@ -1,0 +1,73 @@
+# Engineering Division Rules
+# .agents/rules/divisions/engineering.md
+# AUTHORITY: LAYER 3 — Division-level constraints.
+# Read by: Engineering Lead + all Engineering specialists at session start.
+
+---
+
+## Stack Defaults (override in PROJECT.md if different)
+
+These are the assumed defaults. If PROJECT.md specifies otherwise, PROJECT.md wins
+for stack choices — but the quality rules below cannot be overridden.
+
+- **Runtime:** Node.js 20+ / Python 3.12+ / Go 1.22+ (per project)
+- **Framework:** Next.js 14 App Router (web) / FastAPI (API) / Gin (Go)
+- **Database:** PostgreSQL 16 (default ORM: Prisma / SQLAlchemy / GORM)
+- **Styling:** Tailwind CSS or CSS Modules (no inline styles in components)
+- **Test Framework:** Vitest / pytest / Go test
+- **Type System:** TypeScript strict mode / Python with type hints required
+
+---
+
+## Hard Quality Rules (cannot be overridden by PROJECT.md)
+
+### Code Quality
+- No `any` type in TypeScript — use `unknown` and narrow, or define a proper type
+- No hardcoded environment values in code — all from config/env references
+- No commented-out dead code committed to the repo
+- All new public functions/methods must have JSDoc/docstring describing parameters and return
+
+### API Design
+- All writes must be idempotent — idempotency keys on all external calls
+- Input validation at the API boundary — never trust raw request body
+- Error responses must follow RFC 7807 (Problem Details for HTTP APIs)
+- All new endpoints must have a corresponding OpenAPI spec entry before implementation begins
+
+### Database
+- No raw string-interpolated queries — parameterized queries only, always
+- No N+1 queries — explicit relationship loading only
+- Every new index requires a query plan analysis before being applied
+- Migrations follow expand-contract pattern — backward compatible for exactly one deploy cycle
+- Never drop a column and migrate data in the same changeset
+- Foreign keys must always have corresponding indexes
+
+### Testing
+- Test names must clearly describe the scenario: `"should return 401 when token is expired"`
+- Test selectors use stable identifiers (`data-testid`) — never CSS selectors or visible text
+- Mocks must represent realistic data shapes — no empty objects or placeholder strings
+
+---
+
+## Engineering Division Guardrails (Tier 2)
+
+Enforced by Engineering Lead before accepting output from specialists:
+- No code ships without type check AND lint passing (run both, not just one)
+- No N+1 query patterns (Engineering Lead verifies ORM query patterns in review)
+- Coverage must not decrease on any modified file
+
+---
+
+## File Conventions (override in PROJECT.md if different)
+
+```
+src/
+  app/           <- Next.js App Router pages (if applicable)
+  components/    <- Reusable UI components
+  services/      <- Business logic services
+  routes/        <- API route handlers
+  lib/           <- Shared utilities and helpers
+  types/         <- TypeScript type definitions
+  config/        <- Configuration files (no secrets)
+tests/           <- Test files (mirroring src/ structure)
+prisma/          <- Database schema and migrations (if using Prisma)
+```

@@ -1,0 +1,85 @@
+---
+description: "Forge Nexus agent system — core routing, ironclad rules, and conventions"
+alwaysApply: true
+---
+
+# Agent Routing
+
+```
+Situation                                             -> Skill / Division
+----------------------------------------------------- -> --------------------------------
+User has a new idea or goal                           -> /office-hours  (UX Researcher)
+User wants to scope and plan work                     -> /plan          (Orchestrator)
+User wants full pre-build review                      -> /autoplan      (Orchestrator)
+User wants to build a UI component                    -> /design        (Design -> Engineering)
+User wants TDD implementation                         -> /tdd           (Quality -> Engineering)
+User wants to audit existing code                     -> /review        (Orchestrator + Security)
+User wants to debug a production bug                  -> /investigate   (Engineering)
+User wants to ship code to a PR                       -> /ship          (DevOps)
+User wants to deploy to an environment                -> /deploy        (Platform Lead)
+User wants to generate a CI/CD pipeline               -> /pipeline-generate (DevOps)
+User wants to audit an existing pipeline              -> /pipeline-audit    (DevOps)
+Production is broken / incident                       -> /incident      (Incident Commander)
+User wants full system health check                   -> /health        (Quality Lead)
+User wants E2E / black-box validation                 -> /e2e           (QA Automation Engineer)
+User wants smoke test after deploy                    -> /smoke         (QA Automation Engineer)
+User wants API contract test                          -> /contract      (QA Automation Engineer)
+User wants DB data integrity audit                    -> /dataaudit     (QA Automation Engineer)
+User wants test data seeded                           -> /seed          (QA Automation Engineer)
+Session is ending / save memory                       -> /learn + /retro (Intelligence)
+High-stakes decision with real trade-offs             -> /council       (Research Council)
+Choosing between two architectures                    -> /council       (Research Council)
+Evaluating a new technology or vendor                 -> /council       (Research Council)
+Reviewing a research paper's claims                   -> /council       (Research Council)
+Two divisions disagree on approach                    -> /council       (Research Council)
+
+-- General-Purpose Primitives (any agent, any situation) --
+Need full content from a webpage                      -> browse_url
+Need ALL content from a docs site / domain            -> crawl_site (depth 1-5)
+Need to find something online                         -> search_web -> browse_url
+Need to read a PDF, DOCX, XLSX, CSV file              -> read_document
+Need to call an external API                          -> api_call (Tier 2 approval required)
+Need to validate a JSON/YAML payload                  -> validate_schema
+Need to convert data between formats                  -> transform_data
+Need to query the project database (read-only)        -> query_db (SELECT auto-approved)
+Need to find a function/class across the codebase     -> search_code (semantic mode)
+Need to trace who calls / what a function calls       -> trace_call
+Need to explain code to a non-technical stakeholder   -> explain_code (audience=non-tech)
+Need to condense a large document or crawl result     -> summarize
+Need to compare two versions of a file or spec        -> diff_content (semantic mode)
+Need to draft a message, spec, or issue               -> draft (human approves before send)
+```
+
+# Rules
+
+- **RULE 01 — NO SECRETS IN OUTPUT**: Never write credentials, API keys, tokens, passwords, or private URLs to any
+- **RULE 02 — AUDIT BEFORE ACTION**: Every tool call, file write, and external API call is logged to `audit.jsonl`
+- **RULE 03 — HUMAN IS ALWAYS IN CONTROL**: No agent can make a change that prevents a human from reverting it.
+- **RULE 04 — NO HALLUCINATED RESULTS**: If a tool call fails, the agent reports the failure. It never fabricates a
+- **RULE 05 — READ BEFORE WRITING**: An agent must read a file before modifying it. Never write a file based on
+- **RULE 06 — SCOPE BEFORE EXECUTING**: Before any multi-step operation, the agent identifies all files and systems it
+- **RULE 07 — FAIL LOUD, NEVER SILENT**: Any error, unexpected result, or ambiguous situation is immediately reported up
+- **RULE 08 — ROLLBACK IS ALWAYS PLANNED**: Before any destructive or irreversible action:
+- **RULE 09 — LEARNED PATTERNS FIRST**: Every agent reads `learned.jsonl` at session start, filtered by relevant tags
+- **RULE 10 — NO CROSS-DIVISION DIRECT TALK**: All cross-division communication routes through the Orchestrator.
+- **RULE 11 — CONFIDENCE IS HONEST**: Confidence scores in Result Messages are never inflated to appear more capable.
+- **RULE 12 — PROJECT RULES NEVER OVERRIDE SECURITY**: Project-specific rules (PROJECT.md, division rules, task overrides) can
+
+# Conventions
+
+- Language:       [e.g. TypeScript strict / Python with type hints / Go]
+- Naming:         [e.g. camelCase variables, PascalCase types, kebab-case files]
+- File Structure: [describe your specific directory layout]
+- Import Style:   [e.g. absolute from src/ / relative imports]
+- Branch Strategy:[e.g. main + feature branches / gitflow / trunk-based]
+
+# Pre-Flight Sequence
+
+1. READ `.agents/MANIFEST.md`
+2. READ `.agents/rules/global.md`
+3. READ `.agents/PROJECT.md`
+4. READ `.agents/learned.jsonl` (tag-filtered)
+5. CHECK `.agents/task.md`
+6. VALIDATE permission tiers
+7. SCOPE all files to be touched
+8. LOG activation to `audit.jsonl`

@@ -1,0 +1,6 @@
+# This directory stores research artifacts from crawl_site, browse_url,
+# and /office-hours briefs.
+# research/
+#   office-hours-brief.md    — produced by /office-hours
+#   crawl-<domain>-<ts>/     — crawl_site results
+#   council-research-<ts>/   — research materials gathered by Research Council

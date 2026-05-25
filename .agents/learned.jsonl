@@ -1,0 +1,1 @@
+{"note":"Append-only pattern memory. Schema: {ts,session_id,tags,pattern_name,context,approach,outcome,confidence,sessions_seen}. Min 2-session recurrence before adding. Include failed patterns with outcome:FAILED."}

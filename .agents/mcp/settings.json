@@ -1,0 +1,230 @@
+# MCP Tool Registry
+# .agents/mcp/settings.json
+#
+# Maps: which agents can call which tools, per-operation permission tiers,
+# rate limits, retry policies, and cache TTLs.
+#
+# This is a reference contract — actual MCP server connections are configured
+# in the AI tool's own MCP settings (e.g., Cursor settings, Claude Code MCP config).
+# This file tells agents HOW to use those tools, not where to connect.
+
+{
+  "registry_version": "1.0.0",
+  "last_updated": "2026-05-25",
+
+  "tools": {
+    "github": {
+      "description": "GitHub repository management — issues, PRs, branches, code",
+      "tier_defaults": {
+        "read_repo": 1,
+        "list_issues": 1,
+        "list_prs": 1,
+        "read_file": 1,
+        "create_issue": 1,
+        "create_pr": 2,
+        "merge_pr": 2,
+        "push_branch": 2,
+        "delete_branch": 2,
+        "force_push": 3
+      },
+      "rate_limit": {
+        "requests_per_minute": 60,
+        "retry_on_429": true,
+        "backoff": "exponential",
+        "max_retries": 3
+      },
+      "cache_ttl_seconds": {
+        "read_file": 300,
+        "list_issues": 120,
+        "list_prs": 120,
+        "read_repo_metadata": 3600
+      },
+      "allowed_agents": ["orchestrator", "engineering-lead", "frontend-developer", "backend-architect", "database-engineer", "devops-engineer", "security-engineer", "sdet", "qa-automation-engineer", "design-lead", "research-moderator", "research-advocate", "research-skeptic", "research-domain-expert"]
+    },
+
+    "figma": {
+      "description": "Figma design file access — frames, components, tokens, prototypes",
+      "tier_defaults": {
+        "get_file": 1,
+        "get_node": 1,
+        "get_images": 1,
+        "export_frame": 1,
+        "get_comments": 1,
+        "post_comment": 2
+      },
+      "rate_limit": {
+        "requests_per_minute": 30,
+        "retry_on_429": true,
+        "backoff": "linear",
+        "max_retries": 3
+      },
+      "cache_ttl_seconds": {
+        "get_file": 86400,
+        "get_node": 86400,
+        "get_images": 3600,
+        "export_frame": 3600
+      },
+      "allowed_agents": ["design-lead", "ui-designer", "design-systems-engineer", "animator", "visual-qa-specialist", "research-moderator", "research-domain-expert"]
+    },
+
+    "sentry": {
+      "description": "Error monitoring, performance tracking, release management",
+      "tier_defaults": {
+        "get_issues": 1,
+        "get_events": 1,
+        "get_performance": 1,
+        "get_releases": 1,
+        "resolve_issue": 2,
+        "create_alert": 2
+      },
+      "rate_limit": {
+        "requests_per_minute": 100,
+        "retry_on_429": false,
+        "backoff": "exponential",
+        "max_retries": 2
+      },
+      "cache_ttl_seconds": {
+        "get_issues": 300,
+        "get_performance": 300,
+        "get_releases": 600
+      },
+      "allowed_agents": ["incident-commander", "performance-tester", "qa-automation-engineer", "intelligence-lead", "session-analyst", "orchestrator", "engineering-lead"]
+    },
+
+    "terraform": {
+      "description": "Infrastructure as Code — plan, apply, state management",
+      "tier_defaults": {
+        "validate": 1,
+        "plan": 1,
+        "show": 1,
+        "state_list": 1,
+        "apply": 2,
+        "destroy": 3,
+        "import": 2,
+        "state_rm": 3
+      },
+      "rate_limit": {
+        "requests_per_minute": 10,
+        "retry_on_429": true,
+        "backoff": "exponential",
+        "max_retries": 2
+      },
+      "cache_ttl_seconds": {
+        "validate": 300,
+        "plan": 60,
+        "state_list": 60
+      },
+      "allowed_agents": ["platform-lead", "cloud-architect", "devops-engineer"]
+    },
+
+    "docker": {
+      "description": "Container build, push, and management",
+      "tier_defaults": {
+        "build": 1,
+        "inspect": 1,
+        "pull": 1,
+        "push": 2,
+        "run": 2,
+        "exec": 2,
+        "rm": 2,
+        "rmi": 2
+      },
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "retry_on_429": true,
+        "backoff": "exponential",
+        "max_retries": 3
+      },
+      "cache_ttl_seconds": {
+        "inspect": 300
+      },
+      "allowed_agents": ["platform-lead", "devops-engineer", "security-engineer"]
+    },
+
+    "kubernetes": {
+      "description": "Kubernetes cluster management — deployments, services, pods",
+      "tier_defaults": {
+        "get_pods": 1,
+        "get_deployments": 1,
+        "get_services": 1,
+        "describe": 1,
+        "logs": 1,
+        "apply": 2,
+        "rollout_undo": 2,
+        "delete_pod": 2,
+        "delete_namespace": 3,
+        "exec": 2
+      },
+      "rate_limit": {
+        "requests_per_minute": 30,
+        "retry_on_429": true,
+        "backoff": "exponential",
+        "max_retries": 3
+      },
+      "cache_ttl_seconds": {
+        "get_pods": 30,
+        "get_deployments": 60,
+        "get_services": 300
+      },
+      "allowed_agents": ["platform-lead", "devops-engineer", "incident-commander"]
+    },
+
+    "browser": {
+      "description": "Web browser for URL scraping, documentation reading, research",
+      "tier_defaults": {
+        "navigate": 1,
+        "read_page": 1,
+        "screenshot": 1,
+        "click": 1,
+        "fill_form": 2,
+        "submit_form": 2
+      },
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "retry_on_429": true,
+        "backoff": "linear",
+        "max_retries": 2
+      },
+      "cache_ttl_seconds": {
+        "read_page": 3600,
+        "screenshot": 300
+      },
+      "allowed_agents": ["research-moderator", "research-advocate", "research-skeptic", "research-devils-advocate", "research-domain-expert", "ux-researcher", "orchestrator"]
+    },
+
+    "database": {
+      "description": "Direct database query access (read-only for validation, write only via migrations)",
+      "tier_defaults": {
+        "query_select": 1,
+        "query_explain": 1,
+        "query_count": 1,
+        "query_insert": 2,
+        "query_update": 2,
+        "query_delete": 2,
+        "drop_table": 3,
+        "truncate": 3
+      },
+      "rate_limit": {
+        "requests_per_minute": 50,
+        "retry_on_429": false,
+        "backoff": "exponential",
+        "max_retries": 2
+      },
+      "cache_ttl_seconds": {
+        "query_select": 30,
+        "query_count": 30
+      },
+      "allowed_agents": ["qa-automation-engineer", "database-engineer", "backend-architect"]
+    }
+  },
+
+  "global_blocked_patterns": [
+    "rm -rf",
+    "DROP DATABASE",
+    "curl | bash",
+    "wget | sh",
+    "eval(",
+    "exec(",
+    "base64 --decode"
+  ]
+}

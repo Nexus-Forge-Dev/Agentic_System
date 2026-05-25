@@ -1,0 +1,146 @@
+---
+description: "Frontend engineering and UI design rules"
+globs: ["src/**/*.tsx", "src/**/*.ts", "src/**/*.css"]
+alwaysApply: false
+---
+
+# Frontend Engineering Rules
+
+# .agents/rules/divisions/engineering.md
+# AUTHORITY: LAYER 3 — Division-level constraints.
+# Read by: Engineering Lead + all Engineering specialists at session start.
+
+---
+
+## Stack Defaults (override in PROJECT.md if different)
+
+These are the assumed defaults. If PROJECT.md specifies otherwise, PROJECT.md wins
+for stack choices — but the quality rules below cannot be overridden.
+
+- **Runtime:** Node.js 20+ / Python 3.12+ / Go 1.22+ (per project)
+- **Framework:** Next.js 14 App Router (web) / FastAPI (API) / Gin (Go)
+- **Database:** PostgreSQL 16 (default ORM: Prisma / SQLAlchemy / GORM)
+- **Styling:** Tailwind CSS or CSS Modules (no inline styles in components)
+- **Test Framework:** Vitest / pytest / Go test
+- **Type System:** TypeScript strict mode / Python with type hints required
+
+---
+
+## Hard Quality Rules (cannot be overridden by PROJECT.md)
+
+### Code Quality
+- No `any` type in TypeScript — use `unknown` and narrow, or define a proper type
+- No hardcoded environment values in code — all from config/env references
+- No commented-out dead code committed to the repo
+- All new public functions/methods must have JSDoc/docstring describing parameters and return
+
+### API Design
+- All writes must be idempotent — idempotency keys on all external calls
+- Input validation at the API boundary — never trust raw request body
+- Error responses must follow RFC 7807 (Problem Details for HTTP APIs)
+- All new endpoints must have a corresponding OpenAPI spec entry before implementation begins
+
+### Database
+- No raw string-interpolated queries — parameterized queries only, always
+- No N+1 queries — explicit relationship loading only
+- Every new index requires a query plan analysis before being applied
+- Migrations follow expand-contract pattern — backward compatible for exactly one deploy cycle
+- Never drop a column and migrate data in the same changeset
+- Foreign keys must always have corresponding indexes
+
+### Testing
+- Test names must clearly describe the scenario: `"should return 401 when token is expired"`
+- Test selectors use stable identifiers (`data-testid`) — never CSS selectors or visible text
+- Mocks must represent realistic data shapes — no empty objects or placeholder strings
+
+---
+
+## Engineering Division Guardrails (Tier 2)
+
+Enforced by Engineering Lead before accepting output from specialists:
+- No code ships without type check AND lint passing (run both, not just one)
+- No N+1 query patterns (Engineering Lead verifies ORM query patterns in review)
+- Coverage must not decrease on any modified file
+
+---
+
+## File Conventions (override in PROJECT.md if different)
+
+```
+src/
+  app/           <- Next.js App Router pages (if applicable)
+  components/    <- Reusable UI components
+  services/      <- Business logic services
+  routes/        <- API route handlers
+  lib/           <- Shared utilities and helpers
+  types/         <- TypeScript type definitions
+  config/        <- Configuration files (no secrets)
+tests/           <- Test files (mirroring src/ structure)
+prisma/          <- Database schema and migrations (if using Prisma)
+```
+
+# Design Division Rules
+
+# .agents/rules/divisions/design.md
+# AUTHORITY: LAYER 3 — Division-level constraints.
+# Read by: Design Lead + all Design specialists at session start.
+
+---
+
+## Hard Design Rules (cannot be overridden by PROJECT.md)
+
+### Pre-Design Requirements
+- No component implementation begins without a reviewed design brief or Figma frame
+- Industry matching is MANDATORY before any design generation — identify the product's
+  industry (fintech, healthtech, SaaS, e-commerce, etc.) before selecting visual style
+- The ui-ux-pro-max pre-delivery checklist must pass before any design is handed to Engineering
+
+### Typography
+- No arbitrary font choices — fonts must come from the approved curated pairs in ui-ux-pro-max
+- Font pairing: one display font + one body font maximum per project (override in PROJECT.md)
+- System fonts (`-apple-system`, `BlinkMacSystemFont`) are not acceptable for premium products
+
+### Color & Visual Style
+- No generic colors (plain red #FF0000, plain blue #0000FF, plain green #00FF00)
+- Colors must come from a curated HSL-based palette with at least 5 tonal steps
+- Dark mode variants are REQUIRED unless PROJECT.md explicitly opts out with justification
+- All interactive elements must have visible focus states (accessibility requirement, not optional)
+
+### Components
+- All components must be responsive by default — no fixed-width desktop-only components
+- Animation durations: micro (100-200ms), transition (200-400ms), entrance (300-600ms)
+- Hover/active states required on all interactive elements
+- No placeholder content (Lorem Ipsum, generic stock photos) in deliverables
+
+### Design System
+- New design tokens must follow the naming convention: `--color-{scale}-{step}`, `--space-{n}`, `--radius-{size}`
+- Token files are the single source of truth — no hardcoded values in component styles
+- Component variants are defined in token space, not as separate component files
+
+---
+
+## Design Division Guardrails (Tier 2)
+
+Enforced by Design Lead before accepting specialist output:
+- Industry was identified and matched before any visual generation
+- ui-ux-pro-max pre-delivery checklist was run and passed
+- No arbitrary fonts — from approved pairs only
+- All components are responsive
+- Dark mode variants exist (unless PROJECT.md opts out)
+
+---
+
+## ui-ux-pro-max Integration
+
+The system uses the `ui-ux-pro-max` skill suite located at `.agents/skills/ui-ux-pro-max/`.
+Before any design task, the Design Lead activates the appropriate sub-skill:
+
+| Task Type | Sub-Skill to Activate |
+|-----------|----------------------|
+| New product/brand design | `brand/SKILL.md` |
+| UI component design | `design/SKILL.md` (161 industry rules) |
+| Design system tokens | `design-system/SKILL.md` |
+| Visual styling direction | `ui-styling/SKILL.md` (67 named styles) |
+| UI implementation (HTML/CSS) | (Design Systems Engineer executes) |
+| Presentation slides | `slides/SKILL.md` |
+| Banner/marketing assets | `banner-design/SKILL.md` |

@@ -1,0 +1,24 @@
+# learned_archive.jsonl
+# .agents/learned_archive.jsonl
+#
+# Archived learned patterns — moved here from learned.jsonl when confidence < 0.5
+# Managed automatically by /retro (Step 3.5 — confidence decay)
+#
+# Purpose: Keep learned.jsonl lean and high-confidence.
+#          Preserve archived patterns for audit/analysis — never permanently delete.
+#
+# Schema (same as learned.jsonl entries):
+# {
+#   "id": "mem_<ulid>",
+#   "ts": "<ISO-8601>",
+#   "agent": "<role>",
+#   "tags": ["<tag1>", "<tag2>"],
+#   "pattern": "<pattern-slug>",
+#   "context": "<what triggered this learning>",
+#   "resolution": "<what solved it>",
+#   "confidence": <0.0-1.0>,
+#   "used_count": <number>,
+#   "last_used": "<ISO-8601>",
+#   "archived_ts": "<ISO-8601>",
+#   "archive_reason": "<confidence below 0.5 after N sessions>"
+# }
