@@ -1,0 +1,24 @@
+{
+  "_schema": "session-record-v1",
+  "_source": "agentic_system_design.md §5.2",
+  "session_id": "sess_REPLACE_WITH_ULID",
+  "goal": "One sentence describing the session objective",
+  "started_at": "ISO-8601",
+  "completed_at": null,
+  "status": "active | completed | interrupted",
+  "agent_invocations": 0,
+  "tasks_created": 0,
+  "tasks_completed": 0,
+  "tasks_failed": 0,
+  "tokens_used": {
+    "input": 0,
+    "output": 0,
+    "cached": 0
+  },
+  "estimated_cost_usd": 0.0,
+  "files_modified": [],
+  "agents_activated": [],
+  "git_head_sha_start": null,
+  "git_head_sha_end": null,
+  "learned_patterns_added": []
+}

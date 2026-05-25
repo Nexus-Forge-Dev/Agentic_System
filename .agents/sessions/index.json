@@ -1,0 +1,13 @@
+{
+  "_comment": "sessions/index.json — master index of all agent sessions. Updated by /context-save on every snapshot. Read by /context-restore when no session-id is provided.",
+  "_schema": {
+    "session_id": "Unique session identifier: sess_<ulid>",
+    "ts": "ISO-8601 timestamp of snapshot",
+    "goal": "One-line summary of the session goal",
+    "status": "IN_PROGRESS | COMPLETED | ABANDONED",
+    "tasks_done": "Count of completed tasks",
+    "tasks_pending": "Count of pending/blocked tasks",
+    "snapshot_path": "Relative path to snapshot.md"
+  },
+  "sessions": []
+}

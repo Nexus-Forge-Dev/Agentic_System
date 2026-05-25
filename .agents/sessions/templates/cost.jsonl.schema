@@ -1,0 +1,37 @@
+# cost.jsonl Schema
+# .agents/sessions/templates/cost.jsonl.schema
+# Source: agentic_system_design.md §10.2
+
+Every line in .agents/cost.jsonl is a JSON object:
+
+{
+  "ts":                "ISO-8601 timestamp",
+  "session_id":        "sess_<ulid>",
+  "agent":             "agent role name",
+  "task_id":           "task_<ulid>",
+  "model":             "gemini-2.5-pro | claude-opus | gpt-4o",
+  "input_tokens":      12500,
+  "output_tokens":     3200,
+  "cached_tokens":     4000,
+  "tool_calls":        8,
+  "tool_cache_hits":   3,
+  "estimated_cost_usd": 0.0240
+}
+
+## Cost Estimation Formulas
+
+### Token Cost (approximate — varies by model pricing):
+- Uncached input: $2.50 / 1M tokens → ($0.0000025 per token)
+- Cached input: $0.625 / 1M tokens → ($0.000000625 per token)
+- Output: $10.00 / 1M tokens → ($0.00001 per token)
+
+### Cache Efficiency:
+- Cache hit rate = tool_cache_hits / tool_calls
+- Target: > 40% cache hit rate for routine sessions
+
+## Rules
+
+- Append-only — one entry per agent activation (per task)
+- session-level cost = SUM of all entries with matching session_id
+- /retro reads this file to produce cost breakdown by agent and division
+- /learn may read this file to identify expensive patterns worth caching

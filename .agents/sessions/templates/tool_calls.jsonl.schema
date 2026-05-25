@@ -1,0 +1,30 @@
+# tool_calls.jsonl Schema
+# .agents/sessions/templates/tool_calls.jsonl.schema
+# Source: agentic_system_design.md §8.2, §7.2
+
+Every line in sessions/<id>/tool_calls.jsonl is a JSON object:
+
+{
+  "ts":              "ISO-8601 timestamp",
+  "session_id":      "sess_<ulid>",
+  "task_id":         "task_<ulid>",
+  "agent":           "agent role name",
+  "tool":            "github | figma | terraform | k8s | sentry | database | browser | playwright",
+  "operation":       "specific operation called (e.g., read_file, list_issues)",
+  "inputs_hash":     "hash(tool+operation+sorted_inputs)",
+  "permission_tier": 1,
+  "approved_by":     "auto | user | <agent-role>",
+  "cache_hit":       false,
+  "cache_ttl":       3600,
+  "duration_ms":     1240,
+  "result_status":   "success | error | timeout | rate_limited",
+  "error":           null
+}
+
+## Rules
+
+- Append-only — never modify existing entries
+- Every tool call logged, whether hit or miss
+- cache_hit = true when result served from .agents/cache/
+- duration_ms = 0 for cache hits (no network call)
+- If rate_limited = true: result_status = "rate_limited", error = "429 Too Many Requests"

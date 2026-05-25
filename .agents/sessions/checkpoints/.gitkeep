@@ -1,0 +1,29 @@
+# Checkpoints directory
+# .agents/sessions/checkpoints/.gitkeep
+#
+# Per-session checkpoint files are created HERE by /plan (Step 5.5).
+# Each session gets: .agents/sessions/<session-id>/checkpoints/
+# Actual checkpoint files are named: <N>.md where N is the tool call count trigger.
+#
+# Checkpoint file format:
+# ---
+# # Auto-Checkpoint — <timestamp>
+# Session: <session-id>
+# Tool calls executed: <N>
+# Trigger: tool call #<N>
+#
+# ## Task States at Checkpoint
+# - [x] task_001 -> SDET: Done ✅ (92% confidence)
+# - [/] task_002 -> Backend Architect: IN PROGRESS
+# - [ ] task_003 -> Security Engineer: Pending
+#
+# ## Agents Active
+# Backend Architect — task_002 (~12 min elapsed)
+#
+# ## Files Modified So Far
+# [CREATED] src/services/auth.service.ts
+# [MODIFIED] src/routes/api/login.ts
+#
+# ## Next Action On Resume
+# Continue task_002 — Backend Architect is mid-implementation of auth service.
+# ---
