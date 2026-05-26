@@ -7,6 +7,14 @@
 Fast post-deploy verification. Critical paths only. Must complete in < 5 minutes.
 If smoke fails → automatic rollback (no manual decision required).
 
+## Pre-Flight Skill Loading
+
+Before starting, load:
+  1. `.agents/skills/qa-pro-max/SKILL_REGISTRY.md`
+  2. `.agents/skills/qa-pro-max/checklists/backend.md` ← HTTP semantics section (auth boundary)
+  3. `.agents/skills/qa-pro-max/ci-cd/exit-codes.md` ← exit code contract for reporting
+
+
 ## Smoke Test Scenarios (run in order, stop on first failure)
 1. Service health endpoint: GET /health → HTTP 200 + JSON { status: "ok" }
 2. Authentication: POST /api/auth/login with valid credentials → HTTP 200 + token

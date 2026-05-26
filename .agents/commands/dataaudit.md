@@ -7,6 +7,14 @@
 Scan database for data integrity violations. Finds problems that unit tests
 cannot catch: orphaned records, broken constraints, null required fields, stale states.
 
+## Pre-Flight Skill Loading
+
+Before starting, load:
+  1. `.agents/skills/qa-pro-max/SKILL_REGISTRY.md`
+  2. `.agents/skills/qa-pro-max/methodologies/data-integrity.md` ← full audit procedure
+  3. `.agents/skills/qa-pro-max/checklists/database.md` ← DB integrity patterns
+
+
 ## Checks Run
 ```
 ORPHANED RECORDS:
@@ -38,3 +46,5 @@ OUTPUT:
 ## Guardrails
 - Read-only queries ONLY (SELECT only — never UPDATE/DELETE during audit)
 - Does not fix violations — surfaces them for human decision
+- Report written to: `.agents/reports/dataaudit-<ts>.md` (agent) AND `/artifacts/tests/` (CI)
+- Use the 5-pillar procedure from `methodologies/data-integrity.md` (Correctness, Atomicity, Audit, Referential, Concurrency)

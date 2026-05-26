@@ -42,6 +42,21 @@
 
 ---
 
+## Required Skill Context — qa-pro-max
+
+All Quality Division agents MUST load `.agents/skills/qa-pro-max/SKILL_REGISTRY.md`
+as **step 4** of their startup sequence (after reading `quality.md`, before reading `learned.jsonl`).
+
+Context optimization rule:
+- Load only the checklist(s) relevant to the current layer being tested
+- Do NOT load all checklists simultaneously — load per-layer as work progresses
+- Always load `ci-cd/gates.md` before reporting any test result
+
+Layer selection reference: `methodologies/layer-testing-order.md` — use the Decision Matrix
+to determine which layers apply to the current task.
+
+---
+
 ## Quality Division Guardrails (Tier 2)
 
 Enforced by Quality Lead before accepting specialist output:
@@ -49,3 +64,5 @@ Enforced by Quality Lead before accepting specialist output:
 - No flaky tests silently swallowed
 - All E2E flows verified DB state, not just HTTP codes
 - Visual regression baselines only updated with explicit acknowledgment
+- Pre-ship checklist (`checklists/pre-ship.md`) completed before any `/ship`
+- Exit codes conform to `ci-cd/exit-codes.md` — `|| true` is a hard block

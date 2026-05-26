@@ -1,4 +1,4 @@
-# MCP Tool Registry
+/* # MCP Tool Registry
 # .agents/mcp/settings.json
 #
 # Maps: which agents can call which tools, per-operation permission tiers,
@@ -6,7 +6,7 @@
 #
 # This is a reference contract — actual MCP server connections are configured
 # in the AI tool's own MCP settings (e.g., Cursor settings, Claude Code MCP config).
-# This file tells agents HOW to use those tools, not where to connect.
+# This file tells agents HOW to use those tools, not where to connect. */
 
 {
   "registry_version": "1.0.0",

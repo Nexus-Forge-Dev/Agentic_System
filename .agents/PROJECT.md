@@ -1,111 +1,284 @@
-# PROJECT.md — Project Configuration
+# PROJECT.md — DevPlatform Monorepo Configuration
 # .agents/PROJECT.md
 #
 # AUTHORITY: LAYER 4 — Cross-cutting project conventions.
 # Read by: Orchestrator (always) + all agents on first task of session.
 # Can override: Division defaults, agent defaults, skill defaults.
 # Cannot override: Ironclad rules (global.md), security guardrails.
-#
-# INSTRUCTIONS: Fill in every section below for this specific project.
-# Delete placeholder text and replace with real values.
-# Agents will fail with BLOCKED status if required sections are empty.
 
 ---
 
-# PROJECT: [Project Name Here]
+# PROJECT: DevPlatform — Forge Nexus Monorepo
+
+> A multi-product developer platform housing three products:
+> 1. **Auth** — Multi-tenant authentication-as-a-service (like Clerk/Auth0, but owned)
+> 2. **Forge IDE** — AI-native full-stack development platform (like Figma + VS Code + Vercel in one)
+> 3. **Nexus** — Developer intelligence platform (monitoring, AI agents, vector search, code intelligence)
+
+---
+
+## Monorepo Structure
+
+```
+devplatform/                       ← pnpm workspace root (Turborepo)
+├── apps/
+│   ├── auth-dashboard/            ← Auth Admin UI (Next.js 16 + React 19 + Tailwind 4)
+│   └── playground/                ← Internal sandbox / testing app
+├── services/
+│   ├── auth-api/                  ← Core auth REST API (Express + TypeScript + Prisma)
+│   ├── auth-gateway/              ← Reverse proxy, tenant resolution, rate limiting (Express)
+│   ├── auth-identity/             ← OIDC IdP, JWKS, authorization code flow (Express + jose)
+│   ├── auth-worker/               ← Async job processor, email sending (BullMQ + node-cron)
+│   └── kms-proxy/                 ← AWS KMS encrypt/decrypt wrapper (Express + @aws-sdk/client-kms)
+├── packages/
+│   ├── shared-auth/               ← Core auth library: Prisma schema, adapters, UI, SDK (@devplatform/auth)
+│   ├── shared-auth-express/       ← Express middleware adapter
+│   ├── shared-auth-fastify/       ← Fastify middleware adapter
+│   ├── shared-auth-nextjs/        ← Next.js middleware + RSC adapter
+│   ├── shared-auth-react/         ← React hooks + context provider
+│   └── shared-auth-ui/            ← Headless auth UI components (React)
+├── docs/
+│   ├── forge/                     ← Forge IDE design documents (7 parts)
+│   └── nexus/                     ← Nexus design documents (6 parts)
+├── infra/                         ← Terraform / Kubernetes / Helm
+├── e2e-tests/                     ← Playwright E2E test suite
+├── scripts/                       ← Database init, observability configs, pgAdmin setup
+└── .agents/                       ← Forge Nexus Agentic System (this directory)
+```
+
+---
 
 ## Stack
 
-- Runtime:        [e.g. Node.js 20 / Python 3.12 / Go 1.22]
-- Framework:      [e.g. Next.js 14 App Router / FastAPI / Gin]
-- Database:       [e.g. PostgreSQL 16 / MongoDB 7 / SQLite]
-- ORM:            [e.g. Prisma / SQLAlchemy / GORM / Drizzle]
-- Styling:        [e.g. Tailwind CSS / CSS Modules / styled-components]
-- Test Framework: [e.g. Vitest / Jest / pytest / Go test]
-- CI/CD:          [e.g. GitHub Actions / GitLab CI / CircleCI]
-- Cloud:          [e.g. AWS / GCP / Vercel / Railway / self-hosted]
-- Package Manager:[e.g. pnpm / npm / yarn / uv / pip]
+### Auth (Current — active development)
 
-## Conventions
+| Layer          | Technology                                          |
+|----------------|-----------------------------------------------------|
+| Runtime        | Node.js 20 (LTS)                                    |
+| Language       | TypeScript 5 (strict mode)                          |
+| REST Framework | Express 4 (all services)                            |
+| Auth Library   | `@devplatform/auth` (workspace package)             |
+| ORM            | Prisma 5 (`@devplatform/auth` package)              |
+| Database       | PostgreSQL 16 (database: `devplatform_auth`)        |
+| Cache / Queue  | Redis 7 (sessions, rate limiting, BullMQ jobs)      |
+| Job Queue      | BullMQ 5 (auth-api + auth-worker)                   |
+| Crypto / JWT   | `jose` 5, `@node-rs/argon2`, `@aws-sdk/client-kms` |
+| WebAuthn       | `@simplewebauthn/server` + `@simplewebauthn/browser`|
+| OAuth          | `arctic` 3 (social provider flows)                  |
+| Email          | `resend` (auth-worker + nodemailer fallback)        |
+| Validation     | `zod` 4                                             |
+| Observability  | `prom-client` (metrics), OpenTelemetry (planned)   |
+| Test Framework | Vitest 4 + Supertest                                |
+| Admin UI       | Next.js 16.2 + React 19 + Tailwind CSS 4            |
+| Package Mgr    | pnpm 10 + Turborepo                                 |
 
-- Language:       [e.g. TypeScript strict / Python with type hints / Go]
-- Naming:         [e.g. camelCase variables, PascalCase types, kebab-case files]
-- File Structure: [describe your specific directory layout]
-- Import Style:   [e.g. absolute from src/ / relative imports]
-- Branch Strategy:[e.g. main + feature branches / gitflow / trunk-based]
+### Forge IDE (Design phase — see docs/forge/)
+
+| Layer          | Technology                                          |
+|----------------|-----------------------------------------------------|
+| Frontend       | Next.js 15, React 19, Monaco Editor, Yjs CRDT      |
+| Canvas         | Konva.js + custom React renderer (GPU-accelerated)  |
+| Backend Svc    | Go (Gin/gRPC), Python (FastAPI) — microservices     |
+| AI/ML          | ONNX Runtime, vLLM, Claude 3.5 / Gemini 1.5        |
+| Vector DB      | Qdrant (local: port 6333)                           |
+| Streaming      | Apache Kafka + Confluent (local: port 9092)         |
+| Storage        | AWS S3 + Cloudflare R2                              |
+| Infra          | Kubernetes (EKS), Helm, Terraform, ArgoCD           |
+
+### Nexus (Design phase — see docs/nexus/)
+
+| Layer          | Technology                                          |
+|----------------|-----------------------------------------------------|
+| Core           | Go microservices + Python AI workers                |
+| Vector Search  | Qdrant                                              |
+| Event Bus      | Kafka (topic: `platform.nexus.events`)              |
+| Observability  | Prometheus + Grafana + Loki + Tempo (LGTM stack)    |
+
+---
+
+## Local Infrastructure (docker-compose.yml)
+
+| Service      | Port     | Purpose                                         |
+|--------------|----------|-------------------------------------------------|
+| PostgreSQL 16| 5432     | Primary DB (devplatform_auth, forge_db, nexus_db)|
+| Redis 7      | 6379     | Sessions, rate limiting, BullMQ queues          |
+| MailHog      | 8025 UI, 1025 SMTP | Local email catch-all                |
+| pgAdmin 4    | 5050     | DB management GUI                               |
+| Kafka        | 9092     | Event streaming (profile: `kafka`)              |
+| Qdrant       | 6333     | Vector DB (profile: `nexus`)                    |
+| OTel Collector| 4317/4318| Telemetry (profile: `observability`)           |
+| Prometheus   | 9090     | Metrics (profile: `observability`)              |
+| Grafana      | 3000     | Dashboards (profile: `observability`)           |
+| auth-gateway | 8088     | Reverse proxy → auth-api                        |
+| auth-api     | 8081     | Core auth REST API                              |
+| auth-identity| 8082     | OIDC identity provider                          |
+| kms-proxy    | 8083     | AWS KMS proxy                                   |
+
+---
 
 ## How to Run
 
 ```bash
-# Install dependencies
-[e.g. pnpm install]
+# Install all dependencies (from monorepo root)
+pnpm install
 
-# Start development server
-[e.g. pnpm dev]
+# Start core local infra (PostgreSQL, Redis, MailHog, pgAdmin)
+docker compose up -d
 
-# Run tests
-[e.g. pnpm test]
+# Start Kafka (optional — for event streaming)
+docker compose --profile kafka up -d
 
-# Run linter
-[e.g. pnpm lint]
+# Start Qdrant (optional — for Nexus vector features)
+docker compose --profile nexus up -d
 
-# Run type checker
-[e.g. pnpm typecheck]
+# Start observability stack (optional)
+docker compose --profile observability up -d
 
-# Build for production
-[e.g. pnpm build]
+# Run all services in dev mode (Turborepo)
+pnpm dev
+
+# Run a specific service
+pnpm --filter @devplatform/auth-api dev
+pnpm --filter auth-dashboard dev
+
+# Run all tests
+pnpm test
+
+# Run E2E tests
+pnpm test:e2e
+
+# Run linter across all packages
+pnpm lint
+
+# Run type checker across all packages
+pnpm type-check
+
+# Build all packages (respects Turborepo dep graph)
+pnpm build
+
+# Prisma: push schema to local DB
+pnpm --filter @devplatform/auth db:push
+
+# Prisma: open Prisma Studio
+pnpm --filter @devplatform/auth db:studio
 ```
 
-## Environment
+---
 
-- Local:      .env.local (never committed)
-- Staging:    [e.g. .env.staging / 1Password vault "Engineering" / AWS SSM]
-- Production: [e.g. AWS Secrets Manager / Vercel env vars / GCP Secret Manager]
+## Environment Variables
+
+- **Local:**      `.env.local` (never committed — use `.env.example` as template)
+- **Staging:**    Injected via GitHub Actions secrets (`DATABASE_AUTH_URL`, `REDIS_URL`, etc.)
+- **Production:** AWS Secrets Manager + injected into K8s pods via External Secrets Operator
+
+### Required env vars per service
+
+| Service        | Key Vars                                                         |
+|----------------|------------------------------------------------------------------|
+| auth-api       | `DATABASE_AUTH_URL`, `DATABASE_URL`, `REDIS_URL`, `KMS_KEY_ID`  |
+| auth-gateway   | `AUTH_API_URL`                                                   |
+| auth-identity  | `AUTH_URL`, `REDIS_URL`                                          |
+| auth-worker    | `REDIS_URL`, `RESEND_API_KEY`, `SMTP_HOST`                       |
+| kms-proxy      | `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`       |
+| auth-dashboard | `NEXT_PUBLIC_AUTH_API_URL`, `NEXT_PUBLIC_IDENTITY_URL`          |
+
+All credentials live in `.env.agents` (gitignored). Never inline secrets.
+
+---
+
+## Conventions
+
+- **Language:**       TypeScript 5 strict — all services, all packages
+- **Naming:**         camelCase variables, PascalCase types/classes, kebab-case file names
+- **File Structure:** Feature-by-feature within `src/` — no flat index files except for barrel exports
+- **Import Style:**   Relative imports within a package; `@devplatform/*` workspace imports across packages
+- **Branch Strategy:** `main` (production) ← `develop` (integration) ← `feature/<name>` branches
+- **PR Policy:**      All PRs require: lint ✅ + type-check ✅ + tests ✅ + /review score ≥ 8.0
+- **Commits:**        Conventional commits — `feat:`, `fix:`, `chore:`, `refactor:`, `test:`
+
+---
 
 ## Deployment
 
-- Staging:    [e.g. Auto-deploy on merge to 'develop' branch via GitHub Actions]
-- Production: [e.g. Manual approval required, deploy from 'main' only]
-- Rollback:   [e.g. git revert + redeploy / Kubernetes rollout undo / Vercel instant rollback]
+| Environment  | Trigger                                          | Approval  |
+|--------------|--------------------------------------------------|-----------|
+| **Local**    | `docker compose up` + `pnpm dev`                 | Automatic |
+| **Staging**  | Push/merge to `develop` → GitHub Actions         | Automatic (after CI passes) |
+| **Production** | Manual trigger from `main` after PR approval   | Tier 2 — explicit human confirmation required |
+| **Rollback** | `kubectl rollout undo deployment/<name>` or Vercel instant rollback | Immediate, no approval needed |
 
-## Design System
+- Zero-downtime deployments required (rolling strategy, never replace-all)
+- Every production deploy records git SHA + rollback command in deploy receipt
+- `/canary` monitors production for 30 minutes post-deploy (6 checks every 5 min)
 
-- Tokens:           [e.g. /src/design-tokens/ / tailwind.config.ts]
-- Component Library:[e.g. shadcn/ui + custom / Radix UI / MUI]
-- Brand Colors:     [e.g. Primary: #1A2B3C, Accent: #FF6B35]
-- Font:             [e.g. Geist Sans + Geist Mono / Inter + JetBrains Mono]
-- Icon Library:     [e.g. Lucide / Heroicons / Phosphor]
+---
+
+## Database
+
+- **ORM:** Prisma 5 (source of truth: `packages/shared-auth/prisma/schema.prisma`)
+- **Migrations:** `prisma migrate dev` locally, `prisma migrate deploy` in CI
+- **RLS:** Row-Level Security policies applied via raw SQL in migrations (NOT via Prisma models)
+- **Databases:**
+  - `devplatform_auth` — Auth service (tenants, users, sessions, MFA, OAuth, RBAC, audit logs)
+  - `forge_db` — Forge IDE (projects, canvas state, components — planned)
+  - `nexus_db` — Nexus intelligence (code graph, vector metadata — planned)
+- **Soft deletes:** Users have `deleted_at` column — no hard deletes of user records
+- **Audit logs:** Append-only, RLS enforced per tenant, integrity hash on every row
+
+---
+
+## Design System (auth-dashboard)
+
+- **Styling:**          Tailwind CSS 4 (PostCSS plugin mode)
+- **Component Library:** Custom (headless — `shared-auth-ui` package)
+- **Font:**             System default (to be specified in Forge design system)
+- **Icon Library:**     To be decided (Lucide preferred)
+
+---
 
 ## Hard Project Rules
 
-> Rules that apply to this project beyond the framework defaults.
-> Examples only — replace with your actual rules.
+> These apply across ALL services and packages.
 
-- [e.g. All API routes require authentication — no public endpoints without explicit exception]
-- [e.g. Database models must have soft-delete (deleted_at column) — no hard deletes ever]
-- [e.g. All external API calls must go through /src/lib/api-client.ts — no direct fetch()]
-- [e.g. All forms must have client-side + server-side validation]
+- All API routes behind auth-gateway require tenant resolution — no unauthenticated routes without explicit `@public` annotation
+- Database models use `snake_case` column names mapped to `camelCase` in Prisma (`@map`)
+- All external API calls from auth-worker must go through retry logic (BullMQ job retry, max 3)
+- No secrets in logs, error messages, or API responses — ever (Rule 01 applies)
+- OAuth tokens (access/refresh) stored AES-256-GCM encrypted in DB — never plaintext
+- TOTP secrets stored AES-256-GCM encrypted via KMS proxy — never raw in DB
+- All RLS policies enforced at the database level — Prisma is NOT the security boundary
+- Zero critical CVEs in any Docker image before push to registry
+- All BullMQ jobs must be idempotent — jobs may be retried without side effects
 
-## Permitted Overrides
-
-> Framework defaults this project explicitly changes.
-> Leave empty if no overrides needed.
-
-- [e.g. Bundle size limit is 200KB gzipped for this project (not the 150KB default)]
-- [e.g. Dark mode variants are NOT required — this is a light-only product (with justification)]
+---
 
 ## Known Gotchas
 
-> Documented project-specific pitfalls for agents to know before starting.
-> Leave empty if no known issues.
+- `shared-auth` uses ESM (`"type": "module"`) — all imports must use `.js` extensions in TypeScript source
+- Prisma RLS: migrations must be run as a superuser; app-level DB user has row-level access only
+- `auth-api` and `shared-auth` both depend on `@prisma/client` — ensure the same version across both
+- Redis connection string format for BullMQ is `host:port` NOT `redis://host:port` in some configs — check `REDIS_URL` format per service
+- MailHog is catch-all in local dev — all emails (including password resets) appear at `http://localhost:8025`
+- Kafka and Qdrant are NOT started by default — use `--profile kafka` and `--profile nexus` flags
+- `sessions/checkpoints/` and `sessions/templates/` in `.agents/` are for the agentic system — NOT application sessions
 
-- [e.g. The auth module has a circular dependency — see DEBUG_REPORT.md in /docs]
-- [e.g. Environment variables are snake_case in this project, not SCREAMING_SNAKE_CASE]
-- [e.g. The database connection pool must be initialized before any test runs]
+---
 
 ## MCP Configuration
 
-> References to MCP config files for this project.
-
 - Settings: `.agents/mcp/settings.json`
 - Auth:     All credentials in `.env.agents` (gitignored)
+
+---
+
+## Product Roadmap Context
+
+| Product  | Status           | Source of Truth                                |
+|----------|------------------|------------------------------------------------|
+| Auth     | Active development | `services/`, `packages/shared-auth/`, `apps/auth-dashboard/` |
+| Forge IDE | Design complete   | `docs/forge/` (7-part design doc)              |
+| Nexus    | Design complete   | `docs/nexus/` (6-part design doc)              |
+
+Agents working on Forge or Nexus features should read the relevant design docs
+in `docs/forge/` or `docs/nexus/` before starting any task. These are the
+authoritative source — treat them as the specification.

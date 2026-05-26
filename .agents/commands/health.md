@@ -11,6 +11,17 @@ Produces a unified pass/fail dashboard. Used before major releases and for daily
 
 ---
 
+## Pre-Flight Skill Loading
+
+Before starting, load:
+  1. `.agents/skills/qa-pro-max/SKILL_REGISTRY.md`
+  2. `.agents/skills/qa-pro-max/ci-cd/gates.md` ← gate definitions for the dashboard
+  3. `.agents/skills/qa-pro-max/checklists/workers-queues.md` ← DLQ and queue health checks
+  4. `.agents/skills/qa-pro-max/checklists/cache.md` ← Redis health checks
+
+
+---
+
 ## Workflow
 
 ```

@@ -7,6 +7,16 @@
 Bidirectional API contract test. Validates that implementation matches OpenAPI spec
 in BOTH directions: request schema and response schema.
 
+---
+
+## Pre-Flight Skill Loading
+
+Before starting, load:
+  1. `.agents/skills/qa-pro-max/SKILL_REGISTRY.md`
+  2. `.agents/skills/qa-pro-max/methodologies/contract-testing.md` ← full contract methodology
+  3. `.agents/skills/qa-pro-max/checklists/backend.md` ← API contract compliance section
+  4. `.agents/skills/qa-pro-max/ci-cd/gates.md` ← contract test gate definitions
+
 ## Workflow
 ```
 STEP 1 — Load OpenAPI spec

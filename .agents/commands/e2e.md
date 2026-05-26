@@ -11,6 +11,18 @@ Verifies DB state, API contracts, business rules, and all side effects.
 
 ---
 
+## Pre-Flight Skill Loading
+
+Before starting, load:
+  1. `.agents/skills/qa-pro-max/SKILL_REGISTRY.md`
+  2. `.agents/skills/qa-pro-max/methodologies/layer-testing-order.md` (layer 6 context)
+  3. `.agents/skills/qa-pro-max/checklists/frontend.md` (if UI flows are in scope)
+  4. `.agents/skills/qa-pro-max/checklists/backend.md` (API assertion rules)
+  5. `.agents/skills/qa-pro-max/methodologies/data-integrity.md` (DB assertion patterns)
+  6. `.agents/skills/qa-pro-max/ci-cd/gates.md` (before reporting verdict)
+
+---
+
 ## Workflow
 
 ```

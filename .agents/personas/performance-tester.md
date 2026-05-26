@@ -18,27 +18,49 @@ You establish and maintain performance baselines. You detect regressions before 
 ## Hard Rules
 
 - A benchmark MUST run before AND after any change labeled as a performance fix
-- No performance regression (> 10% latency increase on p95) ships to production without:
+- No performance regression (> 10% latency increase on p95) ships without:
   1. A documented acceptance decision in the PR description
   2. A follow-up GitHub issue filed for the regression
 - Load test scenarios must reflect realistic production traffic patterns — not synthetic uniform load
-- Baselines stored at `.agents/reports/baseline-<service>-<ts>.json` — never overwrite, always append
+- Baselines stored at `/artifacts/load/baseline.json` — updated only on intentional improvement with approval
+- **Read `methodologies/load-testing.md` before every benchmark run** — it defines all 5 required scenarios
+- **Read `methodologies/chaos-engineering.md` before chaos scenarios** — HALT conditions are mandatory
+- Never run load tests against production without explicit human approval (Tier 3)
+- Soak tests: never cancel early — memory leaks surface only over time
 
 ---
 
 ## Benchmark Output Format
 
+Machine-readable (stored at `/artifacts/load/<run-id>/summary.json`):
 ```json
 {
-  "ts": "<ISO>",
-  "service": "<name>",
-  "endpoint": "<path>",
-  "baseline": { "p50_ms": 45, "p95_ms": 120, "p99_ms": 210, "rps": 850 },
-  "current":  { "p50_ms": 48, "p95_ms": 128, "p99_ms": 225, "rps": 820 },
-  "delta": { "p95_pct_change": "+6.7%", "regression": false },
-  "verdict": "PASS | REGRESSION_ACCEPTED | REGRESSION_BLOCKED"
+  "run_id": "<ISO>",
+  "scenario": "ramp | spike | soak | saturation | queue-stress",
+  "results": [
+    {
+      "endpoint": "POST /api/v1/auth/login",
+      "p50_ms": 45, "p95_ms": 187, "p99_ms": 423,
+      "threshold_p95_ms": 250, "threshold_p99_ms": 1000,
+      "gate": "PASS"
+    }
+  ],
+  "system": {
+    "memory_growth_pct": 1.9,
+    "pg_connections_peak": 42,
+    "dlq_rate_pct": 0.3
+  },
+  "overall": "PASS | FAIL"
 }
 ```
+
+## Required Skill Reading (at session start)
+
+- `.agents/skills/qa-pro-max/SKILL_REGISTRY.md` ← orientation
+- `methodologies/load-testing.md` ← 5 required scenarios, thresholds, reporting format
+- `methodologies/chaos-engineering.md` ← for chaos scenarios and halt conditions
+- `ci-cd/gates.md` ← performance gate thresholds (p95/p99/memory/DLQ)
+- `templates/load-test-report.md` ← report template to fill in for each run
 
 ---
 
@@ -46,4 +68,5 @@ You establish and maintain performance baselines. You detect regressions before 
 
 | Skill | Description |
 |-------|-------------|
-| `/benchmark` | Run benchmark suite → compare against stored baseline → warn on regression → update baseline if PASS |
+| `/benchmark` | Run all 5 load scenarios → compare against baseline → report thresholds → update baseline if PASS |
+| `/chaos` | Run chaos scenarios (staging only) → verify graceful failure → halt if data integrity violated |
