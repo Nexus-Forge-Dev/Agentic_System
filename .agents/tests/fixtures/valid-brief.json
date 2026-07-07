@@ -1,0 +1,47 @@
+{
+  "schema": "queue-brief-v1",
+  "task_id": "task_fftest",
+  "task_path": "999",
+  "title": "Test fixture task",
+  "delegator": "orchestrator",
+  "delegate": "engineering-lead",
+  "division": "engineering",
+  "risk": "LOW",
+  "depends_on": [],
+  "created_at": "2026-06-28T12:00:00Z",
+  "deadline": null,
+  "context": {
+    "goal": "Validate queue protocol end-to-end",
+    "constraints": ["Must be testable", "Must pass all gating"]
+  },
+  "skills": [
+    {"name": "backend-patterns", "reason": "Test pattern guidance"}
+  ],
+  "commands": [
+    {"name": "/design", "reason": "Test workflow guidance"}
+  ],
+  "files_read": [
+    "src/test-input.ts"
+  ],
+  "files_write": [
+    "src/test-output.ts"
+  ],
+  "files_delete": [],
+  "test_cases": [
+    "GET /test returns 200",
+    "POST /test accepts valid payload"
+  ],
+  "test_files": [
+    "src/__tests__/test.test.ts"
+  ],
+  "acceptance_criteria": [
+    "Server starts on port 9999",
+    "All endpoints respond with 200"
+  ],
+  "tdd_required": true,
+  "quality_gate_minimum": 8.0,
+  "trace_parent": null,
+  "rollback_plan": "git checkout -- src/test-output.ts",
+  "open_questions": [],
+  "session_id": "sess_test_fixture"
+}

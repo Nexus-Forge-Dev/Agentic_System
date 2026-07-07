@@ -1,0 +1,9 @@
+{
+  "schema": "queue-brief-v1",
+  "task_id": "",
+  "delegate": "engineering-lead",
+  "risk": "LOW",
+  "context": {
+    "goal": "This is missing required fields"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_toomany",
+  "goal": "Plan with 16 tasks (should fail rule 12)",
+  "session_id": "sess_test_toomany",
+  "trace_file": ".agents/traces/sess_test_toomany.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "tasks": [
+    { "id": "task_901", "title": "Task 1", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_902", "title": "Task 2", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_903", "title": "Task 3", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_904", "title": "Task 4", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_905", "title": "Task 5", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_906", "title": "Task 6", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_907", "title": "Task 7", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_908", "title": "Task 8", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_909", "title": "Task 9", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_910", "title": "Task 10", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_911", "title": "Task 11", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_912", "title": "Task 12", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_913", "title": "Task 13", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_914", "title": "Task 14", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_915", "title": "Task 15", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 },
+    { "id": "task_916", "title": "Task 16", "agent": "backend-architect", "division": "engineering", "risk": "LOW", "depends_on": [], "brief_required": false, "estimated_files": 1 }
+  ]
+}

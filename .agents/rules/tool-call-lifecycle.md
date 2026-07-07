@@ -169,6 +169,48 @@ Every tool call — hit or miss — is logged to `sessions/<id>/tool_calls.jsonl
 
 ---
 
+## Cache Enforcement Protocol
+
+Every agent MUST use `.agents/scripts/cache.ps1` before executing any tool call
+for tools listed in the TTL table below. This is not optional.
+
+### Before Every Tool Call (Cache Check)
+
+```
+1. Normalize inputs: JSON-stringify with keys sorted alphabetically
+2. Run: powershell .agents/scripts/cache.ps1 check <tool> <operation> "<inputs_json>"
+3. If exit code 0 (HIT):
+   → Read returned JSON as the cached result
+   → Skip the actual tool call
+   → Log to tool_calls.jsonl with cache_hit: true
+4. If exit code 1 (MISS or EXPIRED):
+   → Execute the tool call normally
+   → Capture the result
+   → Run: powershell .agents/scripts/cache.ps1 write <tool> <operation> "<inputs_json>" "<result_json>" <ttl>
+   → Log to tool_calls.jsonl with cache_hit: false
+```
+
+### Session Start Warmup
+
+At the start of each session, run:
+```
+powershell .agents/scripts/cache.ps1 clear
+```
+This removes any stale entries from prior sessions so the cache starts clean.
+
+### Guardrails
+
+- **Never cache results containing secrets** — if the result contains any field
+  matching (api_key|secret|token|password|private_key), skip the cache write
+- **TTL is per-operation, not per-tool** — a `read` of a config file (TTL 120s)
+  is different from a `read` of a lock file (treat as 30s)
+- **Cache bypass** — if the agent knows the data has changed since the last call
+  (e.g., agent just edited the file), skip the cache check entirely
+- **Cache writes never fail the task** — if the write fails, log a warning and
+  continue; the task must not be blocked by a cache write error
+
+---
+
 ## Rate Limiting
 
 Each MCP server has rate limits enforced transparently:

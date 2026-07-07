@@ -1,0 +1,9 @@
+﻿{
+    "schema": "queue-index-v1",
+    "version": 1,
+    "created": "2026-06-28T19:15:00Z",
+    "updated": "2026-06-28T20:50:00Z",
+    "note": "Queue protocol initialized. Auto-migrates to v2 on first script access.",
+    "queues": [],
+    "archive": []
+}

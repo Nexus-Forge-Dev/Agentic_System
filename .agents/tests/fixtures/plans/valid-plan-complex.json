@@ -1,0 +1,66 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_test002",
+  "goal": "Complex DAG fixture with diamond dependency pattern",
+  "session_id": "sess_test_complex_dag",
+  "trace_file": ".agents/traces/sess_test_complex_dag.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "notes": "Tests diamond-shaped dependency graph",
+  "tasks": [
+    {
+      "id": "task_201",
+      "title": "Root task - schema design",
+      "agent": "database-engineer",
+      "division": "engineering",
+      "risk": "LOW",
+      "depends_on": [],
+      "brief_required": false,
+      "estimated_files": 1,
+      "notes": "Base of the diamond"
+    },
+    {
+      "id": "task_202",
+      "title": "Left branch - API service",
+      "agent": "backend-architect",
+      "division": "engineering",
+      "risk": "HIGH",
+      "depends_on": ["task_201"],
+      "brief_required": true,
+      "estimated_files": 5,
+      "notes": "Left side of diamond"
+    },
+    {
+      "id": "task_203",
+      "title": "Right branch - frontend shell",
+      "agent": "frontend-developer",
+      "division": "engineering",
+      "risk": "MED",
+      "depends_on": ["task_201"],
+      "brief_required": true,
+      "estimated_files": 3,
+      "notes": "Right side of diamond"
+    },
+    {
+      "id": "task_204",
+      "title": "Merge - integration test",
+      "agent": "sdet",
+      "division": "quality",
+      "risk": "LOW",
+      "depends_on": ["task_202", "task_203"],
+      "brief_required": false,
+      "estimated_files": 2,
+      "notes": "Merge point of diamond"
+    },
+    {
+      "id": "task_205",
+      "title": "Deploy to staging",
+      "agent": "devops-engineer",
+      "division": "platform",
+      "risk": "HIGH",
+      "depends_on": ["task_204"],
+      "brief_required": true,
+      "estimated_files": 1,
+      "notes": "Final task on critical path"
+    }
+  ]
+}

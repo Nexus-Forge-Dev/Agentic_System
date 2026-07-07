@@ -1,0 +1,40 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_cyclic",
+  "goal": "Plan with circular dependency (should fail rule 3)",
+  "session_id": "sess_test_cyclic",
+  "trace_file": ".agents/traces/sess_test_cyclic.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "tasks": [
+    {
+      "id": "task_301",
+      "title": "Task A",
+      "agent": "backend-architect",
+      "division": "engineering",
+      "risk": "LOW",
+      "depends_on": ["task_303"],
+      "brief_required": false,
+      "estimated_files": 1
+    },
+    {
+      "id": "task_302",
+      "title": "Task B",
+      "agent": "backend-architect",
+      "division": "engineering",
+      "risk": "LOW",
+      "depends_on": ["task_301"],
+      "brief_required": false,
+      "estimated_files": 1
+    },
+    {
+      "id": "task_303",
+      "title": "Task C",
+      "agent": "backend-architect",
+      "division": "engineering",
+      "risk": "LOW",
+      "depends_on": ["task_302"],
+      "brief_required": false,
+      "estimated_files": 1
+    }
+  ]
+}

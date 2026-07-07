@@ -1,0 +1,36 @@
+{
+  "task_id": "task_001",
+  "task_path": "001",
+  "title": "Add Vitest test suite to dashboard server",
+  "risk": "LOW",
+  "agent": "backend-architect",
+  "depends_on": [],
+  "skills": ["backend-patterns", "tdd-workflow"],
+  "commands": ["/tdd"],
+  "files_read": [
+    "services/dashboard-server/src/index.ts",
+    "services/dashboard-server/package.json",
+    "services/dashboard-server/tsconfig.json"
+  ],
+  "files_write": [
+    "services/dashboard-server/vitest.config.ts",
+    "services/dashboard-server/src/__tests__/health.test.ts"
+  ],
+  "test_cases": [
+    "GET /api/health returns 200 with { status: 'ok' }",
+    "GET /api/audit returns valid JSON with entries array",
+    "GET / returns 200 with text/html content type"
+  ],
+  "test_files": [
+    "services/dashboard-server/src/__tests__/health.test.ts"
+  ],
+  "acceptance_criteria": [
+    "vitest.config.ts configured for the project (ESM, TypeScript, environment)",
+    "All 3 test cases pass when running: pnpm --filter @devplatform/dashboard-server exec vitest run",
+    "Tests use supertest for HTTP assertions against the Express app",
+    "No existing server code is modified — tests only"
+  ],
+  "estimated_files_touched": 4,
+  "rollback_plan": "git checkout -- services/dashboard-server/vitest.config.ts services/dashboard-server/src/__tests__/; git restore package.json",
+  "open_questions": []
+}

@@ -1,0 +1,53 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+.venv/
+venv/
+ENV/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.next/
+.nuxt/
+.output/
+out/
+
+# Runtime logs — never commit session data or audit trails
+*.log
+audit.jsonl
+audit.jsonl.bak
+cost.jsonl
+
+# Runtime agent cache and session data — regenerated on use
+.agents/cache/
+.agents/sessions/
+.agents/traces/
+.agents/queue/archive/
+
+# Local Claude settings
+.claude/settings.local.json
+.claude/session-state/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.pem

@@ -1,0 +1,20 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_baddiv",
+  "goal": "Plan with invalid division (should fail rule 5)",
+  "session_id": "sess_test_baddiv",
+  "trace_file": ".agents/traces/sess_test_baddiv.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "tasks": [
+    {
+      "id": "task_601",
+      "title": "Task in imaginary division",
+      "agent": "backend-architect",
+      "division": "skunkworks",
+      "risk": "LOW",
+      "depends_on": [],
+      "brief_required": false,
+      "estimated_files": 1
+    }
+  ]
+}

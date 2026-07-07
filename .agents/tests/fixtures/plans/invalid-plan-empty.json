@@ -1,0 +1,9 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_empty",
+  "goal": "Plan with no tasks (should fail rule 11)",
+  "session_id": "sess_test_empty",
+  "trace_file": ".agents/traces/sess_test_empty.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "tasks": []
+}

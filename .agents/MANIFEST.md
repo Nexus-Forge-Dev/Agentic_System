@@ -14,7 +14,7 @@ System:    Forge Nexus Agentic System
 Version:   1.0.0
 Canonical: .agents/ (this directory)
 Adapters:  CLAUDE.md | AGENTS.md | .cursor/rules/agents.mdc
-Updated:   2026-05-25T03:21:15Z
+Updated:   2026-06-28T19:00:00Z
 ```
 
 ---
@@ -57,6 +57,9 @@ User wants smoke test after deploy                    -> /smoke         (QA Auto
 User wants API contract test                          -> /contract      (QA Automation Engineer)
 User wants DB data integrity audit                    -> /dataaudit     (QA Automation Engineer)
 User wants test data seeded                           -> /seed          (QA Automation Engineer)
+User needs a structured specification brief for a task  -> /brief-generate  (Any agent - generates skills/commands/files/tests/acceptance brief)
+User needs to delegate a task to another agent           -> /delegate       (Orchestrator or Division Lead - full delegation lifecycle with trace)
+User wants to execute tasks from the DAG sequentially    -> /sequential-execute (Orchestrator or Division Lead - execution queue manager)
 Session is ending / save memory                       -> /learn + /retro (Intelligence)
 High-stakes decision with real trade-offs             -> /council       (Research Council)
 Choosing between two architectures                    -> /council       (Research Council)
@@ -121,10 +124,66 @@ All Result Messages use the structured schema defined in `.agents/rules/global.m
 | Research Council | Evidence manifest | `.agents/council/sessions/<council-id>/evidence_manifest.json` |
 | Incident Commander | Postmortem | `.agents/reports/postmortem-<ts>.md` |
 | Orchestrator | Task DAG | `.agents/task.md` |
+| Orchestrator | Task plan DAG (JSON) | `.agents/plans/<prompt_id>.plan.json` |
+| Orchestrator | Delegation queue | `.agents/queue/<prompt_id>/<task_id>/` (brief.json, status.json, output.json, trace.jsonl) |
 | Intelligence | Learned patterns (active) | `.agents/learned.jsonl` |
 | Intelligence | Learned patterns (archived) | `.agents/learned_archive.jsonl` |
 | All agents | Audit trail | `.agents/audit.jsonl` |
 | All agents | Token costs | `.agents/cost.jsonl` |
+
+---
+
+## Plans — Task DAG Specification
+
+Task plans are JSON files conforming to the `prompt-plan-v1` schema, validated by script:
+
+```
+.agents/plans/
+├── <prompt_id>.plan.json   # DAG with tasks, deps, agents, risk scores
+└── plan.schema.md          # Schema specification (13 validation rules)
+```
+
+**Workflow:**
+1. ORCHESTRATOR writes `.agents/plans/<prompt_id>.plan.json` (prompt-plan-v1 schema)
+2. `.agents/scripts/plan-validator.ps1` validates against 13 rules (IDs, deps, cycles, agents)
+3. `.agents/scripts/plan-scaffold.ps1` creates queue directories from the plan
+4. Tasks are briefed individually via `/brief-generate`
+5. Tasks are executed sequentially via `/sequential-execute`
+
+See `.agents/schemas/plan.schema.md` for the full schema specification.
+
+---
+
+## Queue Protocol — Delegation Handoff Surface
+
+All cross-agent delegation uses the **queue protocol**: a filesystem-based, runtime-agnostic
+handoff standard. Tasks are grouped by **prompt_id** (from the plan), so each delegated task
+has its own directory under `.agents/queue/<prompt_id>/<task_id>/`.
+
+```
+.agents/queue/
+├── <prompt_id>/
+│   ├── <task_id>/
+│   │   ├── brief.json        # Task specification (skills, files, tests, acceptance)
+│   │   ├── context.json      # Handoff packet (prior outputs, relevant memories)
+│   │   ├── status.json       # State machine: pending → in_progress → completed|failed|blocked
+│   │   ├── output.json       # Final result (files written, test results, QG score)
+│   │   └── trace.jsonl       # Subagent execution trace (JSONL per significant action)
+│   └── <task_id>/            # (next task under same prompt)
+├── prompt_adhoc/             # Tasks not part of a plan
+│   └── <task_id>/
+├── archive/                  # Completed/archived tasks (preserves prompt grouping)
+│   └── <prompt_id>/
+│       └── <task_id>/
+└── index.json                # Queue index (v2: prompt-grouped, all active + archived items)
+```
+
+**Lifecycle:** See `.agents/schemas/queue.schema.md` (v2) for full state machine, validation rules,
+and runtime adapter patterns. See `.agents/scripts/queue-manager.ps1` for queue operations
+(New-QueueItem, Set-QueueStatus, Write-QueueOutput, etc.) with v2 index support and
+`Resolve-TaskPath` for prompt-grouped path resolution. See
+`.agents/scripts/delivery-adapter.ps1` for bridging briefs to runtime-specific Task prompts
+(with `Resolve-TaskPath` fallback layers).
 
 ---
 
@@ -177,12 +236,38 @@ CLEANUP:
 
 ---
 
+## Runtime Status
+
+```
+Multi-Agent Runtime:    ACTIVE
+Agent Registry:         28 personas defined in .agents/personas/ — delegated
+                        via Orchestrator → Division Lead → Specialist chain
+Command Registry:       52 commands defined in .opencode/commands/ — classified
+                        by Orchestrator against the routing table above
+Skills Path:           .agents/skills/ + .claude/skills/
+Scripts Path:          .agents/scripts/ — plan-validator.ps1, plan-scaffold.ps1,
+                        queue-manager.ps1 (v2), delivery-adapter.ps1 (v2),
+                        checkpoint.ps1, qg_enforcer.ps1, trace_completeness.ps1,
+                        tdd_order.ps1
+Schema Path:           .agents/schemas/ — plan.schema.md (prompt-plan-v1),
+                        queue.schema.md (v2: prompt-grouped), trace.schema.md
+Intent Routing:        Raw prompts classified and routed by Orchestrator
+```
+
+**MCP Tool Scoping:** The MCP Tool Registry below specifies design intent
+for which agents are expected to use which tools. Runtime enforcement depends
+on the adapter (CLAUDE.md / AGENTS.md / .cursor/rules/) and tool configuration
+for the specific environment.
+
 ## System State
 
 ```
-Current Session:   [updated by Orchestrator on session start]
-Last /retro:       [date of last retrospective]
-Last /sync-adapters: 2026-05-25T03:21:15Z
-Learned Patterns:  [count from learned.jsonl]
-Active Issues:     [count of open GitHub issues filed by agents]
+Current Session:      sess_20260628_fix-gaps (agenda.md)
+Last /retro:          [none yet]
+Last /sync-adapters:  2026-06-15T21:00:00Z
+Learned Patterns:     [count from learned.jsonl]
+Active Issues:        [count of open GitHub issues filed by agents]
+Queue Index Version:  1 (auto-migrates to v2 on first script access)
+Plans Directory:      .agents/plans/ — contains 0 plan files
+Queue Layout:         .agents/queue/<prompt_id>/<task_id>/ (v2 structure)
 ```

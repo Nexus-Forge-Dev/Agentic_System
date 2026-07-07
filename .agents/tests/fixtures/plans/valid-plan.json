@@ -1,0 +1,44 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_test001",
+  "goal": "Test fixture plan for validator",
+  "session_id": "sess_test_plan_validator",
+  "trace_file": ".agents/traces/sess_test_plan_validator.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "notes": null,
+  "tasks": [
+    {
+      "id": "task_101",
+      "title": "Setup database schema",
+      "agent": "database-engineer",
+      "division": "engineering",
+      "risk": "LOW",
+      "depends_on": [],
+      "brief_required": false,
+      "estimated_files": 2,
+      "notes": null
+    },
+    {
+      "id": "task_102",
+      "title": "Implement auth endpoints",
+      "agent": "backend-architect",
+      "division": "engineering",
+      "risk": "HIGH",
+      "depends_on": ["task_101"],
+      "brief_required": true,
+      "estimated_files": 4,
+      "notes": "JWT auth with refresh"
+    },
+    {
+      "id": "task_103",
+      "title": "Build login page",
+      "agent": "frontend-developer",
+      "division": "engineering",
+      "risk": "MED",
+      "depends_on": ["task_102"],
+      "brief_required": true,
+      "estimated_files": 3,
+      "notes": null
+    }
+  ]
+}

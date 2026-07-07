@@ -113,7 +113,7 @@ Every agent — Orchestrator or Specialist — moves through this exact state ma
 
 | Agent | Trigger |
 |-------|---------|
-| Orchestrator | Any slash command, session start |
+| Orchestrator | Any slash command (including `/close`), session start |
 | Division Leads | Orchestrator delegation message |
 | Specialists | Division Lead delegation message |
 | Research Council | `/council` command only |

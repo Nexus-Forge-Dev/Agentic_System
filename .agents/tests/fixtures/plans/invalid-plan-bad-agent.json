@@ -1,0 +1,20 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_badagent",
+  "goal": "Plan with invalid agent role (should fail rule 4)",
+  "session_id": "sess_test_badagent",
+  "trace_file": ".agents/traces/sess_test_badagent.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "tasks": [
+    {
+      "id": "task_501",
+      "title": "Task with imaginary agent",
+      "agent": "quantum-engineer",
+      "division": "engineering",
+      "risk": "LOW",
+      "depends_on": [],
+      "brief_required": false,
+      "estimated_files": 1
+    }
+  ]
+}

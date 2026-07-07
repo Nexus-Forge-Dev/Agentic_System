@@ -1,0 +1,6 @@
+{"ts":"2026-06-28T12:00:00Z","phase":"execute","type":"task_start","name":"task_fftest","task_path":"999","detail":"Started test fixture task"}
+{"ts":"2026-06-28T12:00:01Z","phase":"execute","type":"skill_load","name":"backend-patterns","task_path":"999","detail":"Loaded test skill"}
+{"ts":"2026-06-28T12:00:02Z","phase":"execute","type":"file_read","name":"src/test-input.ts","task_path":"999","detail":"Read test input"}
+{"ts":"2026-06-28T12:00:05Z","phase":"execute","type":"file_write","name":"src/test-output.ts","task_path":"999","detail":"Wrote test output"}
+{"ts":"2026-06-28T12:01:00Z","phase":"execute","type":"task_output","name":"task_fftest output","task_path":"999","detail":"Test complete, QG=9.50/10, all tests pass","result":"QG=9.50/10"}
+{"ts":"2026-06-28T12:01:01Z","phase":"execute","type":"task_complete","name":"task_fftest","task_path":"999","result":"Test completed successfully"}

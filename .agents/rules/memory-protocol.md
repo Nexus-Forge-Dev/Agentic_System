@@ -106,11 +106,17 @@ STEP 3 — Inject Path-Scoped Rules
     - intelligence → .agents/rules/divisions/intelligence.md
 
 STEP 4 — Warm Tool Cache
-  Based on task type, pre-load likely tool results from cache:
+  Run: powershell .agents/scripts/cache.ps1 clear
+  This removes stale entries from prior sessions.
+  Then based on task type, pre-load likely tool results from cache:
     → Infra task: load last terraform plan result if cached
     → Test task: load last test run result if cached
     → Design task: load last Figma frame hash if cached
   This reduces latency on first tool call of the session.
+
+STEP 5 — Load Cache Utility Reference
+  Note: .agents/scripts/cache.ps1 is available for cache check/write/clear.
+  Use it before every tool call as specified in tool-call-lifecycle.md §Cache Enforcement.
 ```
 
 ---

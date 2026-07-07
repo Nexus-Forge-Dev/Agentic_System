@@ -1,0 +1,20 @@
+{
+  "schema": "queue-brief-v1",
+  "task_id": "task_skip",
+  "task_path": "998",
+  "title": "Skip-level delegation (should be rejected)",
+  "delegator": "orchestrator",
+  "delegate": "sdet",
+  "division": "quality",
+  "risk": "LOW",
+  "depends_on": [],
+  "created_at": "2026-06-28T12:00:00Z",
+  "context": {
+    "goal": "Test that orchestator→specialist is rejected",
+    "constraints": []
+  },
+  "skills": [{"name": "backend-patterns", "reason": "Test"}],
+  "files_write": ["src/out.ts"],
+  "test_cases": ["Test passes"],
+  "acceptance_criteria": ["Done"]
+}

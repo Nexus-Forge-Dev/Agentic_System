@@ -1,0 +1,4 @@
+{"ts":"2026-06-28T12:00:00Z","phase":"execute","type":"task_start","name":"task_bad","task_path":"995","detail":"GREEN phase: but implements first!"}
+{"ts":"2026-06-28T12:00:05Z","phase":"execute","type":"file_write","name":"src/validate.ts","task_path":"995","detail":"Wrote implementation BEFORE tests"}
+{"ts":"2026-06-28T12:00:10Z","phase":"execute","type":"file_write","name":"src/__tests__/validate.test.ts","task_path":"995","detail":"Wrote tests AFTER implementation"}
+{"ts":"2026-06-28T12:01:00Z","phase":"execute","type":"task_complete","name":"task_bad","task_path":"995","result":"Implementation done"}

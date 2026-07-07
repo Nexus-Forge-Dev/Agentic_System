@@ -112,6 +112,7 @@ STEP 1 — Summarize Completed Tasks
 STEP 2 — Drop Stale Tool Results
   Tool results older than 5 agent steps are removed from working memory
   BUT saved to tool cache on disk (.agents/cache/) before removal
+  Use: powershell .agents/scripts/cache.ps1 write <tool> <operation> "<inputs_json>" "<result_json>" <ttl>
   Rule: "older than 5 steps" = the result was injected more than 5 tool calls ago
 
 STEP 3 — Compress Episodic Memory

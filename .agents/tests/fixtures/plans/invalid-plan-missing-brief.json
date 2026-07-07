@@ -1,0 +1,20 @@
+{
+  "schema": "prompt-plan-v1",
+  "prompt_id": "prompt_nobrief",
+  "goal": "Plan with HIGH risk but brief_required=false (should fail rule 8)",
+  "session_id": "sess_test_nobrief",
+  "trace_file": ".agents/traces/sess_test_nobrief.exec.jsonl",
+  "created_at": "2026-06-28T20:00:00Z",
+  "tasks": [
+    {
+      "id": "task_701",
+      "title": "Dangerous operation without brief",
+      "agent": "cloud-architect",
+      "division": "platform",
+      "risk": "CRITICAL",
+      "depends_on": [],
+      "brief_required": false,
+      "estimated_files": 5
+    }
+  ]
+}
